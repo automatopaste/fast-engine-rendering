@@ -2,6 +2,7 @@ package data.scripts.shaders;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.*;
+import data.scripts.fer_ModPlugin;
 import data.scripts.shaders.util.fer_ShaderProgram;
 import data.scripts.shaders.util.fer_ShaderRendererInstanced;
 import org.lazywizard.lazylib.MathUtils;
@@ -278,6 +279,7 @@ public class fer_EngineFlareShader implements CombatLayeredRenderingPlugin {
 
     @Override
     public EnumSet<CombatEngineLayers> getActiveLayers() {
+        if (fer_ModPlugin.RENDER_WEAPONS_ON_TOP) return EnumSet.of(CombatEngineLayers.BELOW_SHIPS_LAYER);
         return EnumSet.of(CombatEngineLayers.ABOVE_SHIPS_AND_MISSILES_LAYER);
     }
 
@@ -293,7 +295,11 @@ public class fer_EngineFlareShader implements CombatLayeredRenderingPlugin {
         CombatEngineAPI engine = Global.getCombatEngine();
         if (engine == null) return;
 
-        drawFlares();
+        if (fer_ModPlugin.RENDER_WEAPONS_ON_TOP) {
+            if (layer == CombatEngineLayers.BELOW_SHIPS_LAYER) drawFlares();
+        } else {
+            if (layer == CombatEngineLayers.ABOVE_SHIPS_AND_MISSILES_LAYER) drawFlares();
+        }
     }
 
     public static class FlareData {

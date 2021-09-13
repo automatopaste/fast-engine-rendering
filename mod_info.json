@@ -3,7 +3,7 @@
 	"name":"Fast Engine Rendering",
 	"author":"tomatopaste",
 	"version":"1.0.0",
-	"description":"Yeah mate",
+	"description":"Uses modern OpenGL rendering techniques to efficiently render custom engine plumes. The main purpose of this mod is a performance booster but the engine shaders are useful for fake thrusters.",
 	"gameVersion":"0.95a-RC15",
 	"jars":["jars/FastEngineRendering.jar"],
 	"modPlugin":"data.scripts.fer_ModPlugin",

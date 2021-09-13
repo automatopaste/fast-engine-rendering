@@ -6,5 +6,6 @@
 	#override
 	"forceNoVBO":false,
 
-	"fer_renderWeaponsOnTop": false,
+	#if enable if readability is an issue
+	"fer_renderWeaponsAndShipsOnTop": false,
 }

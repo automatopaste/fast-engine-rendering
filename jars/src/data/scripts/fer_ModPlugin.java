@@ -6,9 +6,7 @@ import com.fs.starfarer.api.Global;
 public class fer_ModPlugin extends BaseModPlugin {
     public static final String MOD_AUTHOR = "tomatopaste";
 
-    @Override
-    public void onGameLoad(boolean newGame) {
-    }
+    public static boolean RENDER_WEAPONS_ON_TOP = Global.getSettings().getBoolean("fer_renderWeaponsAndShipsOnTop");
 
     @Override
     public void onApplicationLoad() throws ClassNotFoundException {
