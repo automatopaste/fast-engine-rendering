@@ -1,0 +1,10 @@
+{
+	"plugins":{
+		"fer_CombatEffectsPlugin":"data.scripts.plugins.fer_CombatEffectsPlugin",
+	},
+
+	#override
+	"forceNoVBO":false,
+
+	"fer_renderWeaponsOnTop": false,
+}

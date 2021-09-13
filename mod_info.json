@@ -1,0 +1,10 @@
+{
+	"id":"fast_engine_rendering",
+	"name":"Fast Engine Rendering",
+	"author":"tomatopaste",
+	"version":"1.0.0",
+	"description":"Yeah mate",
+	"gameVersion":"0.95a-RC15",
+	"jars":["jars/FastEngineRendering.jar"],
+	"modPlugin":"data.scripts.fer_ModPlugin",
+}

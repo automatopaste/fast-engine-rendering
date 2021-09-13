@@ -1,0 +1,2 @@
+command,class,tags,syntax,help
+StressTest,data.scripts.console.commands.fer_StressTest,"combat,fast_engine_render",stressTest <variant id> <rows> <columns>,Spawn x number of ships

@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="DroneLib">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../DroneLib/jars/DroneLib.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
