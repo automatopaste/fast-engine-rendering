@@ -2,7 +2,8 @@ package data.scripts.shaders;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.*;
-import com.fs.starfarer.coreui.S;
+import com.fs.starfarer.api.graphics.SpriteAPI;
+import com.fs.starfarer.combat.entities.Missile;
 import data.scripts.fer_ModPlugin;
 import data.scripts.shaders.util.fer_ShaderProgram;
 import data.scripts.shaders.util.fer_ShaderRendererInstanced;
@@ -138,7 +139,17 @@ public class fer_EngineFlareShader implements CombatLayeredRenderingPlugin {
     }
 
     private final List<ShipAPI> ships = new ArrayList<>();
-    //private final List<MissileAPI> missiles = new ArrayList<>();
+    private final List<ShipWeaponRedrawData> shipsToRedrawWeapons = new ArrayList<>();
+    private final List<MissileAPI> missiles = new ArrayList<>();
+
+    private static class ShipWeaponRedrawData {
+        public ShipAPI ship;
+        public float value;
+        public ShipWeaponRedrawData(ShipAPI ship, float value) {
+            this.ship = ship;
+            this.value = value;
+        }
+    }
 
     @Override
     public void advance(float amount) {
@@ -161,9 +172,8 @@ public class fer_EngineFlareShader implements CombatLayeredRenderingPlugin {
         }
 
         if (!engine.isPaused()) {
+            ship:
             for (ShipAPI ship : engine.getShips()) {
-                if (ship.getHullStyleId().equals("OMEGA")) continue;
-
                 boolean isStored = ships.contains(ship);
 
                 ship.setRenderEngines(false);
@@ -179,6 +189,11 @@ public class fer_EngineFlareShader implements CombatLayeredRenderingPlugin {
                 }
 
                 for (ShipEngineControllerAPI.ShipEngineAPI controller : ship.getEngineController().getShipEngines()) {
+                    if (!fer_ModPlugin.INCLUDED_ENGINE_STYLES.contains(controller.getStyleId())) {
+                        ship.setRenderEngines(true);
+                        continue ship;
+                    }
+
                     Vector2f pos = controller.getEngineSlot().computePosition(ship.getLocation(), ship.getFacing());
                     float angle = controller.getEngineSlot().getAngle();
                     Vector2f size = new Vector2f(
@@ -252,7 +267,20 @@ public class fer_EngineFlareShader implements CombatLayeredRenderingPlugin {
                             float g = MathUtils.clamp(((targetG - flare.getGlowSize()) * amount) + flare.getGlowSize(), 0.2f, 2.5f);
                             flare.setGlowSize(g);
 
+                            if (g > 1f) {
+                                boolean ignore = false;
+                                for (ShipWeaponRedrawData s : shipsToRedrawWeapons) {
+                                    if (s.ship.equals(ship)) {
+                                        ignore = true;
+                                        break;
+                                    }
+                                }
+                                if (!ignore) shipsToRedrawWeapons.add(new ShipWeaponRedrawData(ship, g));
+                            }
+
                             flare.setContrailSize(controller.getEngineSlot().getContrailWidth());
+
+                            flare.setDisabled(false);
                         }
                     } else {
                         ships.add(ship);
@@ -263,15 +291,18 @@ public class fer_EngineFlareShader implements CombatLayeredRenderingPlugin {
 
             // to be continued?
             /*for (MissileAPI missile : engine.getMissiles()) {
+                Missile m = (Missile) missile;
+                if (m.getEngineLocations().isEmpty()) continue;
+
                 boolean isStored = missiles.contains(missile);
 
                 missile.getEngineController().extendFlame(this, -1f, -1f, -1f);
-                //missile.setGlowRadius(0f);
+                missile.setGlowRadius(0f);
 
-                Vector2f pos = missile.getTailEnd();
+                Vector2f pos = missile.getLocation();
                 float angle = missile.getFacing();
 
-                Missile m = (Missile) missile;
+
                 m.getEngineBoostLevel();
                 Vector2f size = new Vector2f(
                         m.getEngineLocations().get(0).getWidth(),
@@ -299,7 +330,7 @@ public class fer_EngineFlareShader implements CombatLayeredRenderingPlugin {
     @Override
     public EnumSet<CombatEngineLayers> getActiveLayers() {
         if (fer_ModPlugin.RENDER_OVER_WEAPONS) return EnumSet.of(CombatEngineLayers.ABOVE_SHIPS_AND_MISSILES_LAYER);
-        return EnumSet.of(CombatEngineLayers.ABOVE_SHIPS_LAYER);
+        return EnumSet.of(CombatEngineLayers.PHASED_SHIPS_LAYER);
     }
 
     @Override
@@ -317,17 +348,23 @@ public class fer_EngineFlareShader implements CombatLayeredRenderingPlugin {
         if (fer_ModPlugin.RENDER_OVER_WEAPONS) {
             if (layer == CombatEngineLayers.ABOVE_SHIPS_AND_MISSILES_LAYER) drawFlares();
         } else {
-            if (layer == CombatEngineLayers.ABOVE_SHIPS_LAYER) drawFlares();
+            if (layer == CombatEngineLayers.PHASED_SHIPS_LAYER) drawFlares();
 
-            for (ShipAPI ship : engine.getShips()) {
-                for (WeaponAPI weapon : ship.getAllWeapons()) {
-                    Vector2f pos = weapon.getSlot().computePosition(ship);
-                    if (weapon.getSprite() != null && !weapon.getSlot().isHidden()) weapon.getSprite().renderAtCenter(pos.x, pos.y);
+            for (ShipWeaponRedrawData shipWeaponRedrawData : shipsToRedrawWeapons) {
+                for (WeaponAPI weapon : shipWeaponRedrawData.ship.getAllWeapons()) {
+                    if (weapon.getSprite() != null && !weapon.getSlot().isHidden()) {
+                        Vector2f pos = weapon.getSlot().computePosition(shipWeaponRedrawData.ship);
+                        float alpha = (shipWeaponRedrawData.value - 1f) / 2f;
+                        weapon.getSprite().setAlphaMult(alpha);
+                        weapon.getSprite().renderAtCenter(pos.x, pos.y);
+                        weapon.getSprite().setAlphaMult(1f);
+                    }
 
                     //barrel offsets are ignored, too icky and probably too much overhead
                     //if (weapon.getBarrelSpriteAPI() != null) weapon.getBarrelSpriteAPI().renderAtCenter(pos.x, pos.y);
                 }
             }
+            shipsToRedrawWeapons.clear();
         }
     }
 

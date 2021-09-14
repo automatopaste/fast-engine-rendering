@@ -31,8 +31,8 @@ public class fer_ShaderRendererInstanced {
     private final int colorVBO;
     private final int boostVBO;
     private FloatBuffer modelViewBuffer;
-    private final FloatBuffer colorBuffer;
-    private final FloatBuffer boostBuffer;
+    private FloatBuffer colorBuffer;
+    private FloatBuffer boostBuffer;
 
     public fer_ShaderRendererInstanced(fer_ShaderProgram program, int numInstances) {
         this.program = program;
@@ -195,6 +195,14 @@ public class fer_ShaderRendererInstanced {
         if (modelViewBuffer != null) {
             modelViewBuffer.clear();
             modelViewBuffer = null;
+        }
+        if (colorBuffer != null) {
+            colorBuffer.clear();
+            colorBuffer = null;
+        }
+        if (boostBuffer != null) {
+            boostBuffer.clear();
+            boostBuffer = null;
         }
     }
 }

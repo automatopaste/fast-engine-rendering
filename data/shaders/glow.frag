@@ -16,5 +16,5 @@ void main() {
     float a = 0.125 / ((dist + 0.0)) - 0.5;
 
     col = vec4((0.7 - dist)) * a;
-    fColor = modColor * (c + col * 0.8);
+    fColor = modColor * (c + col * 0.4);
 }

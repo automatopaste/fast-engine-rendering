@@ -1,6 +1,15 @@
+v1.0.2
+-added merged csv to data/config/fastenginerendering/included_engine_styles.csv, opt-in system for mods to allow their
+engine plumes to be overridden with the performance shader
+-added force override option to settings.json to ignore opt-in system
+-reduced intensity of glow shader
+-plume size tweaks
+-dynamic weapon sprite rendering hopefully solves weirdness of last release
+-fixed weapons rendering over fighters
+
 v1.0.1
 -added zero flux boost visuals
 -now render all weapons over plumes
--shader visual overhaul
+-shader visual blend overhaul
 -now disabled on OMEGA ships
 -added option to disable secondary glow shader for more performance
