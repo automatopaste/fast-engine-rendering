@@ -1,0 +1,6 @@
+v1.0.1
+-added zero flux boost visuals
+-now render all weapons over plumes
+-shader visual overhaul
+-now disabled on OMEGA ships
+-added option to disable secondary glow shader for more performance

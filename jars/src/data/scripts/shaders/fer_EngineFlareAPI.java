@@ -53,4 +53,8 @@ public interface fer_EngineFlareAPI {
     Matrix4f getModelViewGlow(ViewportAPI viewportAPI);
 
     boolean getDisabled();
+
+    void setContrailSize(float contrailSize);
+
+    float getContrailSize();
 }

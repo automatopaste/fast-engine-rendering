@@ -22,6 +22,8 @@ public class fer_BaseFlare implements fer_EngineFlareAPI {
 
     private boolean disabled;
 
+    private float contrailSize;
+
     public fer_BaseFlare(Vector2f loc, Vector2f size, Color color, float angle) {
         this.loc = loc;
         this.size = size;
@@ -29,6 +31,8 @@ public class fer_BaseFlare implements fer_EngineFlareAPI {
         this.angle = angle;
 
         glowSize = 1f;
+
+        contrailSize = 1f;
 
         /*renderer = new fer_ShaderRenderer(
                 "data/shaders/engineflare.vert",
@@ -197,7 +201,7 @@ public class fer_BaseFlare implements fer_EngineFlareAPI {
         //model
         matrix.translate(new Vector3f(loc.x, loc.y, 0f));
         matrix.rotate((float) Math.toRadians(angle), new Vector3f(0f, 0f, 1f));
-        Vector2f size = new Vector2f(this.size.x * glowSize * 0.8f, this.size.x * glowSize * 1.2f);
+        Vector2f size = new Vector2f((contrailSize + (this.size.x * 0.6f)) * glowSize, (contrailSize + (this.size.x * 1.2f)) * glowSize);
         Vector2f offset = new Vector2f(size.x / 2f, size.y / 2f);
         matrix.translate(new Vector3f(-offset.x, -offset.y, 0f));
         matrix.scale(new Vector3f(size.x, size.y, 1f));
@@ -208,5 +212,15 @@ public class fer_BaseFlare implements fer_EngineFlareAPI {
     @Override
     public boolean getDisabled() {
         return disabled;
+    }
+
+    @Override
+    public void setContrailSize(float contrailSize) {
+        this.contrailSize = contrailSize;
+    }
+
+    @Override
+    public float getContrailSize() {
+        return contrailSize;
     }
 }

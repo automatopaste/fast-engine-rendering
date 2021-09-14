@@ -10,9 +10,9 @@ uniform float iTime;
 //author tomatopaste
 //messing with this can break stuff so make a backup first :)
 void main() {
-    float a = iTime * 0.8; //speed
+    float a = iTime * 0.7; //speed
     float b = 5.0; //lobe depth
-    float n = 2.0; //number of lobes
+    float n = 2.5; //number of lobes
     float x = vCoord.x;
     float y = vCoord.y;
     float pi = 3.14159265359;
@@ -25,7 +25,7 @@ void main() {
     }
 
     //abs distance from func
-    float e1 = abs(y - 0.56);
+    float e1 = abs(y - 0.53);
     float d1 = abs(e1 - h);
 
     float t1 = clamp(((d1 / e1) - 1.0), 0.0, 2.0);
@@ -33,7 +33,7 @@ void main() {
     float w1 = clamp((0.35 * h + 0.75) * 2.0 * abs((0.45 * -(1.0 - x)) + e1), 0.15, 3.0);
     t1 *= w1;
 
-    float e2 = abs(y - 0.44);
+    float e2 = abs(y - 0.47);
     float d2 = abs(e2 - h);
 
     float t2 = clamp(((d2 / e2) - 1.0), 0.0, 2.0);
@@ -45,7 +45,7 @@ void main() {
 
     float fade = sqrt(1.0 - vCoord.x);
 
-    fColor = modColor * t * (vBoost * 1.5);
+    fColor = modColor * t * (vBoost * 1.1);
     fColor.a *= m;
     fColor *= fade;
 }

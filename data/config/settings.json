@@ -6,6 +6,8 @@
 	#override
 	"forceNoVBO":false,
 
-	#if enable if readability is an issue
-	"fer_renderWeaponsAndShipsOnTop": false,
+	"fer_RenderOverWeapons": false,
+
+	#disable if you want to squeeze extra performance
+	"fer_UseSecondGlowShader": true,
 }

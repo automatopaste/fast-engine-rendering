@@ -2,6 +2,7 @@ package data.scripts.shaders;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.*;
+import com.fs.starfarer.coreui.S;
 import data.scripts.fer_ModPlugin;
 import data.scripts.shaders.util.fer_ShaderProgram;
 import data.scripts.shaders.util.fer_ShaderRendererInstanced;
@@ -20,6 +21,12 @@ public class fer_EngineFlareShader implements CombatLayeredRenderingPlugin {
     private static final String DATA_KEY = "we_do_a_little_trolling";
 
     private final boolean enabled;
+
+    private static final List<String> ignoreShips = new ArrayList<>();
+    static {
+            ignoreShips.add("buffalo");
+            ignoreShips.add("hound");
+    };
 
     private fer_ShaderProgram program;
     private fer_ShaderProgram glowProgram;
@@ -94,11 +101,13 @@ public class fer_EngineFlareShader implements CombatLayeredRenderingPlugin {
         //instanced render
         fer_ShaderRendererInstanced renderer = new fer_ShaderRendererInstanced(program, data.size());
         renderer.renderInstanced(viewport, data, projection, false);
-        fer_ShaderRendererInstanced glowRenderer = new fer_ShaderRendererInstanced(glowProgram, data.size());
-        glowRenderer.renderInstanced(viewport, data, projection, true);
-
         renderer.dispose();
-        glowRenderer.dispose();
+
+        if (fer_ModPlugin.USE_GLOW_SHADER) {
+            fer_ShaderRendererInstanced glowRenderer = new fer_ShaderRendererInstanced(glowProgram, data.size());
+            glowRenderer.renderInstanced(viewport, data, projection, true);
+            glowRenderer.dispose();
+        }
     }
 
     @Override
@@ -153,6 +162,8 @@ public class fer_EngineFlareShader implements CombatLayeredRenderingPlugin {
 
         if (!engine.isPaused()) {
             for (ShipAPI ship : engine.getShips()) {
+                if (ship.getHullStyleId().equals("OMEGA")) continue;
+
                 boolean isStored = ships.contains(ship);
 
                 ship.setRenderEngines(false);
@@ -188,10 +199,10 @@ public class fer_EngineFlareShader implements CombatLayeredRenderingPlugin {
                             flare.setLocation(pos);
                             flare.setColor(color);
 
-                            float targetL = 0.3f, targetW = 0.6f, targetG = 0.4f;
+                            float targetL = 0.5f, targetW = 0.6f, targetG = 0.6f;
 
                             if (ship.getEngineController().isStrafingLeft() || ship.getEngineController().isStrafingRight()) {
-                                targetW = 1.3f;
+                                targetW = 1.1f;
                                 targetL = 0.5f;
                                 targetG = 1.3f;
                             }
@@ -203,7 +214,7 @@ public class fer_EngineFlareShader implements CombatLayeredRenderingPlugin {
                             } else if (ship.getEngineController().isAcceleratingBackwards()) {
                                 targetL = 0.4f;
                                 targetW = 2f;
-                                targetG = 1.3f;
+                                targetG = 2f;
                             }
 
                             if (ship.getEngineController().isDecelerating()) {
@@ -213,7 +224,7 @@ public class fer_EngineFlareShader implements CombatLayeredRenderingPlugin {
                             }
 
                             float contrail = controller.getEngineSlot().getContrailWidth();
-                            if (contrail == 32f && ship.getSystem() != null && !ship.getSystem().getId().equals("flarelauncher")) { // it's just magic
+                            if (contrail == 32f && ship.getSystem() != null && !ignoreShips.contains(ship.getHullSpec().getBaseHullId())) { // it's just magic
                                 if (ship.getSystem() != null && ship.getSystem().isOn()) {
                                     flare.setDisabled(false);
                                 } else {
@@ -227,13 +238,21 @@ public class fer_EngineFlareShader implements CombatLayeredRenderingPlugin {
                                 flare.setDisabled(ship.isPhased());
                             }
 
+                            if (ship.getFluxTracker().isEngineBoostActive()) {
+                                targetG *= 1.4f;
+                                targetL *= 1.4f;
+                                targetW *= 1.4f;
+                            }
+
                             float l = MathUtils.clamp(((targetL - flare.getLevelLength()) * amount) + flare.getLevelLength(), 0.2f, 3f);
                             float w = MathUtils.clamp(((targetW - flare.getLevelWidth()) * amount) + flare.getLevelWidth(), 0.2f, 3f);
                             flare.setLevelLength(l);
                             flare.setLevelWidth(w);
 
-                            float g = MathUtils.clamp(((targetG - flare.getGlowSize()) * amount) + flare.getGlowSize(), 0.2f, 2f);
+                            float g = MathUtils.clamp(((targetG - flare.getGlowSize()) * amount) + flare.getGlowSize(), 0.2f, 2.5f);
                             flare.setGlowSize(g);
+
+                            flare.setContrailSize(controller.getEngineSlot().getContrailWidth());
                         }
                     } else {
                         ships.add(ship);
@@ -242,7 +261,7 @@ public class fer_EngineFlareShader implements CombatLayeredRenderingPlugin {
                 }
             }
 
-            // to be continued
+            // to be continued?
             /*for (MissileAPI missile : engine.getMissiles()) {
                 boolean isStored = missiles.contains(missile);
 
@@ -279,8 +298,8 @@ public class fer_EngineFlareShader implements CombatLayeredRenderingPlugin {
 
     @Override
     public EnumSet<CombatEngineLayers> getActiveLayers() {
-        if (fer_ModPlugin.RENDER_WEAPONS_ON_TOP) return EnumSet.of(CombatEngineLayers.BELOW_SHIPS_LAYER);
-        return EnumSet.of(CombatEngineLayers.ABOVE_SHIPS_AND_MISSILES_LAYER);
+        if (fer_ModPlugin.RENDER_OVER_WEAPONS) return EnumSet.of(CombatEngineLayers.ABOVE_SHIPS_AND_MISSILES_LAYER);
+        return EnumSet.of(CombatEngineLayers.ABOVE_SHIPS_LAYER);
     }
 
     @Override
@@ -295,10 +314,20 @@ public class fer_EngineFlareShader implements CombatLayeredRenderingPlugin {
         CombatEngineAPI engine = Global.getCombatEngine();
         if (engine == null) return;
 
-        if (fer_ModPlugin.RENDER_WEAPONS_ON_TOP) {
-            if (layer == CombatEngineLayers.BELOW_SHIPS_LAYER) drawFlares();
-        } else {
+        if (fer_ModPlugin.RENDER_OVER_WEAPONS) {
             if (layer == CombatEngineLayers.ABOVE_SHIPS_AND_MISSILES_LAYER) drawFlares();
+        } else {
+            if (layer == CombatEngineLayers.ABOVE_SHIPS_LAYER) drawFlares();
+
+            for (ShipAPI ship : engine.getShips()) {
+                for (WeaponAPI weapon : ship.getAllWeapons()) {
+                    Vector2f pos = weapon.getSlot().computePosition(ship);
+                    if (weapon.getSprite() != null && !weapon.getSlot().isHidden()) weapon.getSprite().renderAtCenter(pos.x, pos.y);
+
+                    //barrel offsets are ignored, too icky and probably too much overhead
+                    //if (weapon.getBarrelSpriteAPI() != null) weapon.getBarrelSpriteAPI().renderAtCenter(pos.x, pos.y);
+                }
+            }
         }
     }
 
@@ -314,7 +343,7 @@ public class fer_EngineFlareShader implements CombatLayeredRenderingPlugin {
         }
     }
 
-    private Color blend(Color c1, Color c2, float ratio) {
+    public static Color blend(Color c1, Color c2, float ratio) {
         if ( ratio > 1f ) ratio = 1f;
         else if ( ratio < 0f ) ratio = 0f;
         float iRatio = 1.0f - ratio;

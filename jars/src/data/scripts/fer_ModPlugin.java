@@ -6,7 +6,8 @@ import com.fs.starfarer.api.Global;
 public class fer_ModPlugin extends BaseModPlugin {
     public static final String MOD_AUTHOR = "tomatopaste";
 
-    public static boolean RENDER_WEAPONS_ON_TOP = Global.getSettings().getBoolean("fer_renderWeaponsAndShipsOnTop");
+    public static boolean RENDER_OVER_WEAPONS = Global.getSettings().getBoolean("fer_RenderOverWeapons");
+    public static boolean USE_GLOW_SHADER = Global.getSettings().getBoolean("fer_UseSecondGlowShader");
 
     @Override
     public void onApplicationLoad() throws ClassNotFoundException {
@@ -20,5 +21,7 @@ public class fer_ModPlugin extends BaseModPlugin {
                     + System.lineSeparator();
             throw new ClassNotFoundException(message);
         }
+
+        if (RENDER_OVER_WEAPONS) throw new NullPointerException("To stop this crash from occuring disable engines rendering over weapons. (blame the mafia)");
     }
 }

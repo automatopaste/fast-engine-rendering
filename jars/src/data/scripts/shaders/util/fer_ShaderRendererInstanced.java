@@ -134,6 +134,7 @@ public class fer_ShaderRendererInstanced {
 
             Color c = flareData.flare.getColor();
             float alpha = flareData.flare.getDisabled() ? 0f : c.getAlpha() / 255f;
+            if (isGlow) alpha *= 0.75f;
             new Vector4f(c.getRed() / 255f, c.getGreen() / 255f, c.getBlue() / 255f, alpha).store(colorBuffer);
 
             float b = flareData.flare.getLevelLength() / 3f;
