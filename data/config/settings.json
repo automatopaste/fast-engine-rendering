@@ -11,5 +11,5 @@
 	#disable if you want to squeeze extra performance
 	"fer_UseSecondGlowShader": true,
 
-	"fer_ForceOverrideAllStyles": true,
+	"fer_ForceOverrideAllStyles": false,
 }

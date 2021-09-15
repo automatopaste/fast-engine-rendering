@@ -18,8 +18,7 @@ import java.util.List;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL30.glBindVertexArray;
-import static org.lwjgl.opengl.GL30.glGenVertexArrays;
+import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.opengl.GL31.glDrawArraysInstanced;
 import static org.lwjgl.opengl.GL33.glVertexAttribDivisor;
 
@@ -133,7 +132,7 @@ public class fer_ShaderRendererInstanced {
             modelView.store(modelViewBuffer);
 
             Color c = flareData.flare.getColor();
-            float alpha = flareData.flare.getDisabled() ? 0f : c.getAlpha() / 255f;
+            float alpha = (flareData.flare.getDisabled() || flareData.flare.getLevelWidth() <= 0.2f || flareData.flare.getLevelWidth() <= 0.2f) ? 0f : c.getAlpha() / 255f;
             if (isGlow) alpha *= 0.75f;
             new Vector4f(c.getRed() / 255f, c.getGreen() / 255f, c.getBlue() / 255f, alpha).store(colorBuffer);
 
@@ -192,6 +191,11 @@ public class fer_ShaderRendererInstanced {
     }
 
     public void dispose() {
+        glDeleteBuffers(modelViewVBO);
+        glDeleteBuffers(colorVBO);
+        glDeleteBuffers(boostVBO);
+        glDeleteVertexArrays(vao);
+
         if (modelViewBuffer != null) {
             modelViewBuffer.clear();
             modelViewBuffer = null;

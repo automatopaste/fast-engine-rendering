@@ -259,10 +259,16 @@ public class fer_EngineFlareShader implements CombatLayeredRenderingPlugin {
                                 targetW *= 1.4f;
                             }
 
-                            float l = MathUtils.clamp(((targetL - flare.getLevelLength()) * amount) + flare.getLevelLength(), 0.2f, 3f);
-                            float w = MathUtils.clamp(((targetW - flare.getLevelWidth()) * amount) + flare.getLevelWidth(), 0.2f, 3f);
-                            flare.setLevelLength(l);
-                            flare.setLevelWidth(w);
+                            if (controller.isDisabled()) {
+                                targetG = 0f;
+                                targetL = 0f;
+                                targetW = 0f;
+                            }
+
+                            float dl = (targetL - flare.getLevelLength()) * amount;
+                            float dw = (targetW - flare.getLevelWidth()) * amount;
+                            flare.setLevelLength(MathUtils.clamp(dl + flare.getLevelLength(), 0.2f, 3f));
+                            flare.setLevelWidth(MathUtils.clamp(dw + flare.getLevelWidth(), 0.2f, 3f));
 
                             float g = MathUtils.clamp(((targetG - flare.getGlowSize()) * amount) + flare.getGlowSize(), 0.2f, 2.5f);
                             flare.setGlowSize(g);
@@ -280,7 +286,7 @@ public class fer_EngineFlareShader implements CombatLayeredRenderingPlugin {
 
                             flare.setContrailSize(controller.getEngineSlot().getContrailWidth());
 
-                            flare.setDisabled(false);
+                            //flare.setDisabled(false);
                         }
                     } else {
                         ships.add(ship);

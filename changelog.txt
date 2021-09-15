@@ -1,3 +1,7 @@
+v1.0.3
+-engines die down on flameout
+-fixed vram leaking
+
 v1.0.2
 -added merged csv to data/config/fastenginerendering/included_engine_styles.csv, opt-in system for mods to allow their
 engine plumes to be overridden with the performance shader
