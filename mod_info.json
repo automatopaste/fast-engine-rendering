@@ -7,4 +7,5 @@
 	"gameVersion":"0.95a-RC15",
 	"jars":["jars/FastEngineRendering.jar"],
 	"modPlugin":"data.scripts.fer_ModPlugin",
+	"utility": true,
 }

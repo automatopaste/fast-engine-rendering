@@ -4,6 +4,7 @@ v1.1.0
 -fixed bugs with system activated engines for good hopefully
 -reload engine data with F8
 -fixed bug with force override setting
+-enabled utility flag
 
 v1.0.3
 -engines die down on flameout
