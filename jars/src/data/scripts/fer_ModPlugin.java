@@ -35,6 +35,17 @@ public class fer_ModPlugin extends BaseModPlugin {
 
         if (RENDER_OVER_WEAPONS) throw new NullPointerException("To stop this crash from occuring disable engines rendering over weapons. (blame the mafia)");
 
+        loadData();
+    }
+
+    @Override
+    public void onDevModeF8Reload() {
+        loadData();
+    }
+
+    private void loadData() {
+        INCLUDED_ENGINE_STYLES.clear();
+
         try {
             JSONArray data = Global.getSettings().getMergedSpreadsheetDataForMod("engine_style_id", "data/config/fastenginerendering/included_engine_styles.csv", MOD_ID);
             for (int i = 0; i < data.length(); i++) {

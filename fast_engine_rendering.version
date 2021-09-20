@@ -1,11 +1,11 @@
 {
 	"masterVersionFile":"https://github.com/automatopaste/fast-engine-rendering/releases/download/na/fast_engine_rendering.version",
 	"modName":"Fast Engine Rendering",
-	#"modThreadId":18660,
+	"modThreadId":22693,
 	"modVersion":
 	{
 		"major":1,
-		"minor":0,
-		"patch":2
+		"minor":1,
+		"patch":0
 	},
 }

@@ -1,3 +1,10 @@
+v1.1.0
+-updated shader code to optimised versions from Jon Micheelsen
+-tweaked glow visuals
+-fixed bugs with system activated engines for good hopefully
+-reload engine data with F8
+-fixed bug with force override setting
+
 v1.0.3
 -engines die down on flameout
 -fixed vram leaking

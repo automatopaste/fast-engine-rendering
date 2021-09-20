@@ -3,12 +3,9 @@ package data.scripts.shaders.util;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.ViewportAPI;
 import data.scripts.shaders.fer_EngineFlareShader;
-import org.lazywizard.lazylib.MathUtils;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector2f;
-import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
 import java.awt.*;
@@ -132,8 +129,7 @@ public class fer_ShaderRendererInstanced {
             modelView.store(modelViewBuffer);
 
             Color c = flareData.flare.getColor();
-            float alpha = (flareData.flare.getDisabled() || flareData.flare.getLevelWidth() <= 0.2f || flareData.flare.getLevelWidth() <= 0.2f) ? 0f : c.getAlpha() / 255f;
-            if (isGlow) alpha *= 0.75f;
+            float alpha = (flareData.flare.getDisabled() || flareData.flare.getLevelWidth() <= 0.25f || flareData.flare.getLevelLength() <= 0.25f) ? 0f : c.getAlpha() / 255f;
             new Vector4f(c.getRed() / 255f, c.getGreen() / 255f, c.getBlue() / 255f, alpha).store(colorBuffer);
 
             float b = flareData.flare.getLevelLength() / 3f;
