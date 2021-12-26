@@ -9,9 +9,9 @@ uniform float iTime;
 //author tomatopaste, Jon Micheelsen
 void main() {
     const float speedPulse = 3.14159 * 2.0;
-    const float intensity = 16.0;
+    const float intensity = 12.0;
     const float intensityPulse = 1.0;
-    const float falloffSize = 20.0;
+    const float falloffSize = 6.0;
     const float falloffCutoff = 1.0 / (1.0 + falloffSize * falloffSize);//compiler will most likely const fold the calculation.
 
     vec2 pos = vCoord * 2.0 - 1.0;

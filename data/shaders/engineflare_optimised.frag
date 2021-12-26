@@ -49,5 +49,5 @@ void main() {
     //fColor = vec4(fColor.r + 0.5, fColor.g + 0.5, fColor.b + 0.5, fColor.a);
     fColor.a *= m;
     fColor *= fade;
-    fColor *= 2.0;
+    fColor *= 5.0;
 }
