@@ -172,14 +172,14 @@ public class fer_EngineFlareShader implements CombatLayeredRenderingPlugin {
                 ship.setRenderEngines(false);
 
                 // dont like doing this but engine colour fading is not accessible through api
-                Color priorityColour = null;
-                if (ship.getSystem() != null && ship.getSystem().getId().equals("plasmajets") && ship.getSystem().isOn()) {
+                Color priorityColour = ship.getEngineController().getFlameColorShifter().getCurr();
+                /*if (ship.getSystem() != null && ship.getSystem().getId().equals("plasmajets") && ship.getSystem().isOn()) {
                     priorityColour = new Color(100,255,100,255);
                 } else if (ship.getSystem() != null && ship.getSystem().getId().equals("plasmaburn") && ship.getSystem().isOn()) {
                     priorityColour = new Color(100,255,100,255);
                 } else if (ship.getVariant().hasHullMod("safetyoverrides")) {
                     priorityColour = new Color(255,100,255,255);
-                }
+                }*/
 
                 for (ShipEngineControllerAPI.ShipEngineAPI controller : ship.getEngineController().getShipEngines()) {
                     if (!fer_ModPlugin.FORCE_OVERRIDE_STYLES && !fer_ModPlugin.INCLUDED_ENGINE_STYLES.contains(controller.getStyleId())) {
@@ -221,12 +221,12 @@ public class fer_EngineFlareShader implements CombatLayeredRenderingPlugin {
                                 targetW = 1f;
                             } else if (ship.getEngineController().isAcceleratingBackwards()) {
                                 targetL = 0.4f;
-                                targetW = 2f;
+                                targetW = 1.5f;
                                 targetG = 2f;
                             }
 
                             if (ship.getEngineController().isDecelerating()) {
-                                targetW = 3f;
+                                targetW = 2f;
                                 targetL = 0.2f;
                                 targetG = 1.4f;
                             }
@@ -248,9 +248,9 @@ public class fer_EngineFlareShader implements CombatLayeredRenderingPlugin {
                             }
 
                             if (ship.getFluxTracker().isEngineBoostActive()) {
-                                targetG *= 1.4f;
-                                targetL *= 1.4f;
-                                targetW *= 1.4f;
+                                targetG *= 1.3f;
+                                targetL *= 1.3f;
+                                targetW *= 1.3f;
                             }
 
                             if (controller.isDisabled()) {
@@ -262,9 +262,9 @@ public class fer_EngineFlareShader implements CombatLayeredRenderingPlugin {
                             float dl = (targetL - flare.getLevelLength()) * amount * 2f;
                             float dw = (targetW - flare.getLevelWidth()) * amount * 2f;
                             flare.setLevelLength(MathUtils.clamp(dl + flare.getLevelLength(), 0.2f, 3f));
-                            flare.setLevelWidth(MathUtils.clamp(dw + flare.getLevelWidth(), 0.2f, 3f));
+                            flare.setLevelWidth(MathUtils.clamp(dw + flare.getLevelWidth(), 0.2f, 2f));
 
-                            float g = MathUtils.clamp(((targetG - flare.getGlowSize()) * amount) + flare.getGlowSize(), 0.2f, 2.5f);
+                            float g = MathUtils.clamp(((targetG - flare.getGlowSize()) * amount) + flare.getGlowSize(), 0.2f, 1.5f);
                             flare.setGlowSize(g);
 
                             if (g > 1f) {
@@ -357,7 +357,7 @@ public class fer_EngineFlareShader implements CombatLayeredRenderingPlugin {
                         float alpha = (shipWeaponRedrawData.value - 1f) / 2f;
                         weapon.getSprite().setAlphaMult(alpha);
                         weapon.getSprite().renderAtCenter(pos.x, pos.y);
-                        weapon.getSprite().setAlphaMult(1f);
+                        weapon.getSprite().setAlphaMult(2f);
                     }
 
                     //barrel offsets are ignored, too icky and probably too much overhead

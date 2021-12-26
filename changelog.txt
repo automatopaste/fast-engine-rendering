@@ -1,3 +1,8 @@
+v1.1.1
+-use smooth engine colour transition
+-visual effects tweaks
+-update to latest game version
+
 v1.1.0
 -updated shader code to optimised versions from Jon Micheelsen
 -tweaked glow visuals
