@@ -1,3 +1,6 @@
+v1.1.2
+-visual improvements
+
 v1.1.1
 -use smooth engine colour transition
 -visual effects tweaks

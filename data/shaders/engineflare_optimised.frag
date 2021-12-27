@@ -21,7 +21,7 @@ void main() {
 
     float l = 0.025; //fadeout at mult edge distance
 
-    float m = clamp((x - l) * 40.0, 0.0, 1.0);//no if or division
+    float m = clamp((x - l) * 2.0, 0.0, 1.0);//no if or division
 
     //abs distance from func
     float e1 = abs(y - 0.53);
@@ -49,5 +49,5 @@ void main() {
     //fColor = vec4(fColor.r + 0.5, fColor.g + 0.5, fColor.b + 0.5, fColor.a);
     fColor.a *= m;
     fColor *= fade;
-    fColor *= 5.0;
+    fColor *= 6.0;
 }

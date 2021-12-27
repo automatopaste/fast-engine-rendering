@@ -2,8 +2,8 @@
 	"id":"fast_engine_rendering",
 	"name":"Fast Engine Rendering",
 	"author":"tomatopaste",
-	"version":"1.1.1",
-	"description":"Uses modern OpenGL rendering techniques to efficiently render custom engine plumes. The main purpose of this mod is a performance booster but the engine shaders are useful for fake thrusters.\nREQUIRES GPU SUPPORTING OPENGL 3.0",
+	"version":"1.1.2",
+	"description":"Uses modern OpenGL rendering techniques to efficiently render custom engine plumes.\n\nREQUIRES GPU SUPPORTING OPENGL 3.0",
 
 	"gameVersion":"0.95.1a-RC6",
 	"jars":["jars/FastEngineRendering.jar"],

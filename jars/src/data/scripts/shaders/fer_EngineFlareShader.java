@@ -264,7 +264,7 @@ public class fer_EngineFlareShader implements CombatLayeredRenderingPlugin {
                             flare.setLevelLength(MathUtils.clamp(dl + flare.getLevelLength(), 0.2f, 3f));
                             flare.setLevelWidth(MathUtils.clamp(dw + flare.getLevelWidth(), 0.2f, 2f));
 
-                            float g = MathUtils.clamp(((targetG - flare.getGlowSize()) * amount) + flare.getGlowSize(), 0.2f, 1.5f);
+                            float g = MathUtils.clamp(((targetG - flare.getGlowSize()) * amount) + flare.getGlowSize(), 0.8f, 1.2f);
                             flare.setGlowSize(g);
 
                             if (g > 1f) {

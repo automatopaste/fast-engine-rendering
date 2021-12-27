@@ -201,7 +201,7 @@ public class fer_BaseFlare implements fer_EngineFlareAPI {
         //model
         matrix.translate(new Vector3f(loc.x, loc.y, 0f));
         matrix.rotate((float) Math.toRadians(angle), new Vector3f(0f, 0f, 1f));
-        Vector2f size = new Vector2f((contrailSize + (this.size.x * 0.4f)) * glowSize, (contrailSize + (this.size.x * 1.1f)) * glowSize);
+        Vector2f size = new Vector2f((contrailSize + (this.size.x * 0.7f)) * glowSize * 1.5f, (contrailSize + (this.size.x * 1.1f)) * glowSize * 1.5f);
         Vector2f offset = new Vector2f(size.x / 2f, size.y / 2f);
         matrix.translate(new Vector3f(-offset.x, -offset.y, 0f));
         matrix.scale(new Vector3f(size.x, size.y, 1f));
