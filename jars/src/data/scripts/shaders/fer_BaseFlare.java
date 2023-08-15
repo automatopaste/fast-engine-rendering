@@ -8,7 +8,7 @@ import org.lwjgl.util.vector.Vector3f;
 
 import java.awt.*;
 
-public class fer_BaseFlare implements fer_EngineFlareAPI {
+public class fer_BaseFlare {
     private Vector2f loc;
     private Vector2f size;
     private float glowSize;
@@ -46,63 +46,51 @@ public class fer_BaseFlare implements fer_EngineFlareAPI {
         disabled = false;
     }
 
-    @Override
     public Vector2f getLocation() {
         return loc;
     }
 
-    @Override
     public Vector2f getSize() {
         return size;
     }
 
-    @Override
     public void setGlowSize(float glowSize) {
         this.glowSize = glowSize;
     }
 
-    @Override
     public float getGlowSize() {
         return glowSize;
     }
 
-    @Override
     public Color getColor() {
         return color;
     }
 
-    @Override
     public void setColor(Color color) {
         this.color = color;
     }
 
-    @Override
     public void dispose() {
         //renderer.dispose();
         //glowRenderer.dispose();
     }
 
-    @Override
     public float getAngle() {
         return angle;
     }
 
-    @Override
     public void setSize(Vector2f size) {
         this.size = size;
     }
 
-    @Override
     public void setAngle(float angle) {
         this.angle = angle;
     }
 
-    @Override
     public void setLocation(Vector2f loc) {
         this.loc = loc;
     }
 
-    @Override
     public boolean advance(float amount) {
         return false;
     }
@@ -123,7 +111,6 @@ public class fer_BaseFlare implements fer_EngineFlareAPI {
         this.levelWidth = levelWidth;
     }
 
-    @Override
     public void render(ViewportAPI viewport) {
         if (disabled) return;
 
@@ -148,32 +135,30 @@ public class fer_BaseFlare implements fer_EngineFlareAPI {
         );*/
     }
 
-    @Override
     public void setDisabled(boolean disabled) {
         this.disabled = disabled;
     }
 
-    @Override
     public fer_ShaderRenderer getFlareRenderer() {
         return null;
     }
 
-    @Override
     public fer_ShaderRenderer getGlowRenderer() {
         return null;
     }
 
-    @Override
-    public Matrix4f getModelView(ViewportAPI viewport) {
-        float viewMult = viewport.getViewMult();
-        Matrix4f matrix = new Matrix4f();
+    public Matrix4f getModelView(Matrix4f view) {
+//        float viewMult = viewport.getViewMult();
+//        Matrix4f matrix = new Matrix4f();
+//
+//        matrix.setIdentity();
+//
+//        //view
+//        matrix.translate(new Vector3f(viewport.getVisibleWidth() / (2f * viewMult), viewport.getVisibleHeight() / (2f * viewMult), 0f));
+//        matrix.scale(new Vector3f(1f / viewport.getViewMult(), 1f / viewport.getViewMult(), 1f));
+//        matrix.translate(new Vector3f(-viewport.getCenter().x, -viewport.getCenter().y, 0f));
 
-        matrix.setIdentity();
-
-        //view
-        matrix.translate(new Vector3f(viewport.getVisibleWidth() / (2f * viewMult), viewport.getVisibleHeight() / (2f * viewMult), 0f));
-        matrix.scale(new Vector3f(1f / viewport.getViewMult(), 1f / viewport.getViewMult(), 1f));
-        matrix.translate(new Vector3f(-viewport.getCenter().x, -viewport.getCenter().y, 0f));
+        Matrix4f matrix = new Matrix4f(view);
 
         //model
         matrix.translate(new Vector3f(loc.x, loc.y, 0f));
@@ -186,17 +171,18 @@ public class fer_BaseFlare implements fer_EngineFlareAPI {
         return matrix;
     }
 
-    @Override
-    public Matrix4f getModelViewGlow(ViewportAPI viewport) {
-        float viewMult = viewport.getViewMult();
-        Matrix4f matrix = new Matrix4f();
+    public Matrix4f getModelViewGlow(Matrix4f view) {
+//        float viewMult = viewport.getViewMult();
+//        Matrix4f matrix = new Matrix4f();
+//
+//        matrix.setIdentity();
+//
+//        //view
+//        matrix.translate(new Vector3f(viewport.getVisibleWidth() / (2f * viewMult), viewport.getVisibleHeight() / (2f * viewMult), 0f));
+//        matrix.scale(new Vector3f(1f / viewport.getViewMult(), 1f / viewport.getViewMult(), 1f));
+//        matrix.translate(new Vector3f(-viewport.getCenter().x, -viewport.getCenter().y, 0f));
 
-        matrix.setIdentity();
-
-        //view
-        matrix.translate(new Vector3f(viewport.getVisibleWidth() / (2f * viewMult), viewport.getVisibleHeight() / (2f * viewMult), 0f));
-        matrix.scale(new Vector3f(1f / viewport.getViewMult(), 1f / viewport.getViewMult(), 1f));
-        matrix.translate(new Vector3f(-viewport.getCenter().x, -viewport.getCenter().y, 0f));
+        Matrix4f matrix = new Matrix4f(view);
 
         //model
         matrix.translate(new Vector3f(loc.x, loc.y, 0f));
@@ -209,17 +195,14 @@ public class fer_BaseFlare implements fer_EngineFlareAPI {
         return matrix;
     }
 
-    @Override
     public boolean getDisabled() {
         return disabled;
     }
 
-    @Override
     public void setContrailSize(float contrailSize) {
         this.contrailSize = contrailSize;
     }
 
-    @Override
     public float getContrailSize() {
         return contrailSize;
     }

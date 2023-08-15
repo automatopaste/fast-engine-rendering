@@ -11,7 +11,7 @@ uniform float iTime;
 //messing with this can break stuff so make a backup first :slight_smile:
 void main() {
     float a = iTime * 0.7; //speed
-    const float b = 5.0; //lobe depth
+    const float b = 6.0; //lobe depth
     const float bInv = 1.0 / b;
     const float n = 2.5; //number of lobes
     float x = vCoord.x;
@@ -45,9 +45,12 @@ void main() {
     //    float fade = sqrt(1.0 - vCoord.x);
     float fade = (1.0 - vCoord.x * vCoord.x);//looks almost identical without a sqrt
 
+    float v = max(0.1 - (abs(y - 0.5) * x), 0.0) * 5.0 * fade;
+    t += (v - t) * 0.8;
+
     fColor = modColor * t * (vBoost * 1.1);
     //fColor = vec4(fColor.r + 0.5, fColor.g + 0.5, fColor.b + 0.5, fColor.a);
     fColor.a *= m;
     fColor *= fade;
-    fColor *= 6.0;
+    fColor *= 12.0;
 }

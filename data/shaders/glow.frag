@@ -13,7 +13,7 @@ void main() {
 
     vec4 col = vec4(vec3(c), 1.0);
 
-    float a = 0.125 / ((dist + 0.0)) - 0.5;
+    float a = 0.125 / ((dist + 0.1)) - 0.5;
 
     col = vec4((0.7 - dist)) * a;
     fColor = modColor * (c + col * 0.4);

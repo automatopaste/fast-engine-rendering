@@ -12,5 +12,6 @@
     <orderEntry type="library" name="LazyLib" level="project" />
     <orderEntry type="library" name="StarsectorCore" level="project" />
     <orderEntry type="library" name="lw_Console" level="project" />
+    <orderEntry type="library" name="CMUtils" level="project" />
   </component>
 </module>

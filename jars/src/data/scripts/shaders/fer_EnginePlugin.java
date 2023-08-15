@@ -2,65 +2,60 @@ package data.scripts.shaders;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.*;
+import com.fs.starfarer.api.input.InputEventAPI;
 import com.fs.starfarer.loading.specs.EngineSlot;
 import data.scripts.fer_ModPlugin;
-import data.scripts.shaders.util.fer_ShaderProgram;
-import data.scripts.shaders.util.fer_ShaderRendererInstanced;
+import data.scripts.shaders.util.fer_FlareRenderer;
+import data.scripts.shaders.util.fer_GlowRenderer;
 import org.lazywizard.lazylib.MathUtils;
-import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.awt.*;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.ListIterator;
 
-public class fer_EngineFlareShader implements CombatLayeredRenderingPlugin {
+public class fer_EnginePlugin extends BaseEveryFrameCombatPlugin {
     private static final String DATA_KEY = "we_do_a_little_trolling";
 
     private final boolean enabled;
+    private final fer_FlareRenderer flareRenderer;
+    private final fer_GlowRenderer glowRenderer;
 
-    private final fer_ShaderProgram program;
-    private fer_ShaderProgram glowProgram;
-
-    public fer_EngineFlareShader() {
+    public fer_EnginePlugin() {
         enabled = true;
 
-        String vert;
-        String frag;
-        this.program = new fer_ShaderProgram();
-        try {
-            vert = Global.getSettings().loadText("data/shaders/engineflare.vert");
-            frag = Global.getSettings().loadText("data/shaders/engineflare_optimised.frag");
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
-        }
-        program.createVertexShader(vert);
-        program.createFragmentShader(frag);
-        program.link();
+        flareRenderer = new fer_FlareRenderer();
+        glowRenderer = Global.getSettings().getBoolean("fer_UseSecondGlowShader") ? new fer_GlowRenderer() : null;
 
-        String vertGlow;
-        String fragGlow;
-        this.glowProgram = new fer_ShaderProgram();
-        try {
-            vertGlow = Global.getSettings().loadText("data/shaders/glow.vert");
-            fragGlow = Global.getSettings().loadText("data/shaders/glow_optimised.frag");
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
+        flareRenderer.setLayer(getActiveLayer());
+        Global.getCombatEngine().addLayeredRenderingPlugin(flareRenderer);
+
+        if (glowRenderer != null) {
+            glowRenderer.setLayer(getActiveLayer());
+            Global.getCombatEngine().addLayeredRenderingPlugin(glowRenderer);
         }
-        glowProgram.createVertexShader(vertGlow);
-        glowProgram.createFragmentShader(fragGlow);
-        glowProgram.link();
+
+
+
     }
 
-    public static void addFlare(ShipEngineControllerAPI.ShipEngineAPI engine, fer_EngineFlareAPI flare, CombatEntityAPI entity) {
+    public static void addFlare(ShipEngineControllerAPI.ShipEngineAPI engine, fer_BaseFlare flare, CombatEntityAPI entity) {
         List<FlareData> data = (List<FlareData>) Global.getCombatEngine().getCustomData().get(DATA_KEY);
         if (data != null) {
-            data.add(new FlareData(engine, flare, entity));
+            data.add(new FlareData(engine, flare, entity, entity.getAngularVelocity()));
+            Global.getCombatEngine().getCustomData().put(DATA_KEY, data);
+        }
+    }
+
+    /**
+     * For external API
+     * FlareData instance must be tracked externally
+     */
+    public static void addFlare(FlareData flareData) {
+        List<FlareData> data = (List<FlareData>) Global.getCombatEngine().getCustomData().get(DATA_KEY);
+        if (data != null) {
+            data.add(flareData);
             Global.getCombatEngine().getCustomData().put(DATA_KEY, data);
         }
     }
@@ -73,60 +68,23 @@ public class fer_EngineFlareShader implements CombatLayeredRenderingPlugin {
         }
     }
 
-    public static fer_EngineFlareAPI getFlare(ShipEngineControllerAPI.ShipEngineAPI engine) {
+    public static fer_BaseFlare getFlare(ShipEngineControllerAPI.ShipEngineAPI engine) {
         List<FlareData> data = (List<FlareData>) Global.getCombatEngine().getCustomData().get(DATA_KEY);
         if (data != null) for (FlareData flareData : data) if (flareData.engine != null && flareData.engine.equals(engine)) return flareData.flare;
         return null;
     }
 
-    public static fer_EngineFlareAPI getFlare(MissileAPI missile) {
-        List<FlareData> data = (List<FlareData>) Global.getCombatEngine().getCustomData().get(DATA_KEY);
-        if (data != null) for (FlareData flareData : data) if (flareData.entity.equals(missile)) return flareData.flare;
-        return null;
-    }
-
-    private void drawFlares() {
-        List<FlareData> data = (List<FlareData>) Global.getCombatEngine().getCustomData().get(DATA_KEY);
-        if (data == null) return;
-
-        ViewportAPI viewport = Global.getCombatEngine().getViewport();
-        Matrix4f projection = fer_ShaderRendererInstanced.orthogonal(viewport.getVisibleWidth() / viewport.getViewMult(), viewport.getVisibleHeight() / viewport.getViewMult());
-
-        //instanced render
-        fer_ShaderRendererInstanced renderer = new fer_ShaderRendererInstanced(program, data.size());
-        renderer.renderInstanced(viewport, data, projection, false);
-        renderer.dispose();
-
-        if (fer_ModPlugin.USE_GLOW_SHADER) {
-            fer_ShaderRendererInstanced glowRenderer = new fer_ShaderRendererInstanced(glowProgram, data.size());
-            glowRenderer.renderInstanced(viewport, data, projection, true);
-            glowRenderer.dispose();
-        }
-    }
+//    public static fer_BaseFlare getFlare(MissileAPI missile) {
+//        List<FlareData> data = (List<FlareData>) Global.getCombatEngine().getCustomData().get(DATA_KEY);
+//        if (data != null) for (FlareData flareData : data) if (flareData.entity.equals(missile)) return flareData.flare;
+//        return null;
+//    }
 
     @Override
-    public void init(CombatEntityAPI entity) {
+    public void init(CombatEngineAPI engine) {
         Global.getCombatEngine().getCustomData().put(DATA_KEY, new ArrayList<>());
     }
 
-    @Override
-    public void cleanup() {
-        CombatEngineAPI engine = Global.getCombatEngine();
-
-        List<FlareData> data = (List<FlareData>) engine.getCustomData().get(DATA_KEY);
-        if (data == null) return;
-
-        for (FlareData flareData : data) {
-            flareData.flare.dispose();
-        }
-
-        program.dispose();
-        glowProgram.dispose();
-
-        engine.getCustomData().put(DATA_KEY, new ArrayList<>());
-    }
-
-    @Override
     public boolean isExpired() {
         return false;
     }
@@ -145,7 +103,7 @@ public class fer_EngineFlareShader implements CombatLayeredRenderingPlugin {
     }
 
     @Override
-    public void advance(float amount) {
+    public void advance(float amount, List<InputEventAPI> inputs) {
         if (!enabled) return;
 
         CombatEngineAPI engine = Global.getCombatEngine();
@@ -171,15 +129,7 @@ public class fer_EngineFlareShader implements CombatLayeredRenderingPlugin {
 
                 ship.setRenderEngines(false);
 
-                // dont like doing this but engine colour fading is not accessible through api
                 Color priorityColour = ship.getEngineController().getFlameColorShifter().getCurr();
-                /*if (ship.getSystem() != null && ship.getSystem().getId().equals("plasmajets") && ship.getSystem().isOn()) {
-                    priorityColour = new Color(100,255,100,255);
-                } else if (ship.getSystem() != null && ship.getSystem().getId().equals("plasmaburn") && ship.getSystem().isOn()) {
-                    priorityColour = new Color(100,255,100,255);
-                } else if (ship.getVariant().hasHullMod("safetyoverrides")) {
-                    priorityColour = new Color(255,100,255,255);
-                }*/
 
                 for (ShipEngineControllerAPI.ShipEngineAPI controller : ship.getEngineController().getShipEngines()) {
                     if (!fer_ModPlugin.FORCE_OVERRIDE_STYLES && !fer_ModPlugin.INCLUDED_ENGINE_STYLES.contains(controller.getStyleId())) {
@@ -200,33 +150,32 @@ public class fer_EngineFlareShader implements CombatLayeredRenderingPlugin {
                     }
 
                     if (isStored) {
-                        fer_EngineFlareAPI flare = fer_EngineFlareShader.getFlare(controller);
+                        fer_BaseFlare flare = fer_EnginePlugin.getFlare(controller);
                         if (flare != null) {
                             flare.setAngle(angle + ship.getFacing());
                             flare.setSize(size);
                             flare.setLocation(pos);
                             flare.setColor(color);
 
-                            float targetL = 0.5f, targetW = 0.6f, targetG = 0.6f;
+                            float targetL = 0.3f, targetW = 0.6f, targetG = 0.6f;
 
                             if (ship.getEngineController().isStrafingLeft() || ship.getEngineController().isStrafingRight()) {
                                 targetW = 1.1f;
-                                targetL = 0.5f;
                                 targetG = 1.3f;
                             }
 
                             if (ship.getEngineController().isAccelerating()) {
-                                targetL = 1.2f;
+                                targetL = 0.9f;
                                 targetG = 1.2f;
                                 targetW = 1f;
                             } else if (ship.getEngineController().isAcceleratingBackwards()) {
                                 targetL = 0.4f;
-                                targetW = 1.5f;
+                                targetW = 1.2f;
                                 targetG = 2f;
                             }
 
                             if (ship.getEngineController().isDecelerating()) {
-                                targetW = 2f;
+                                targetW = 1.2f;
                                 targetL = 0.2f;
                                 targetG = 1.4f;
                             }
@@ -284,10 +233,13 @@ public class fer_EngineFlareShader implements CombatLayeredRenderingPlugin {
                         }
                     } else {
                         ships.add(ship);
-                        fer_EngineFlareShader.addFlare(controller, new fer_BaseFlare(pos, size, color, angle), ship);
+                        fer_EnginePlugin.addFlare(controller, new fer_BaseFlare(pos, size, color, angle), ship);
                     }
                 }
             }
+
+            flareRenderer.setDrawTargets(data);
+            if (glowRenderer != null) glowRenderer.setDrawTargets(data);
 
             // to be continued?
             /*for (MissileAPI missile : engine.getMissiles()) {
@@ -325,31 +277,8 @@ public class fer_EngineFlareShader implements CombatLayeredRenderingPlugin {
                 }
             }*/
         }
-    }
 
-    @Override
-    public EnumSet<CombatEngineLayers> getActiveLayers() {
-        if (fer_ModPlugin.RENDER_OVER_WEAPONS) return EnumSet.of(CombatEngineLayers.ABOVE_SHIPS_AND_MISSILES_LAYER);
-        return EnumSet.of(CombatEngineLayers.PHASED_SHIPS_LAYER);
-    }
-
-    @Override
-    public float getRenderRadius() {
-        return Float.MAX_VALUE;
-    }
-
-    @Override
-    public void render(CombatEngineLayers layer, ViewportAPI viewport) {
-        if (!enabled) return;
-
-        CombatEngineAPI engine = Global.getCombatEngine();
-        if (engine == null) return;
-
-        if (fer_ModPlugin.RENDER_OVER_WEAPONS) {
-            if (layer == CombatEngineLayers.ABOVE_SHIPS_AND_MISSILES_LAYER) drawFlares();
-        } else {
-            if (layer == CombatEngineLayers.PHASED_SHIPS_LAYER) drawFlares();
-
+        if (!fer_ModPlugin.RENDER_OVER_WEAPONS) {
             for (ShipWeaponRedrawData shipWeaponRedrawData : shipsToRedrawWeapons) {
                 for (WeaponAPI weapon : shipWeaponRedrawData.ship.getAllWeapons()) {
                     if (weapon.getSprite() != null && !weapon.getSlot().isHidden()) {
@@ -368,15 +297,22 @@ public class fer_EngineFlareShader implements CombatLayeredRenderingPlugin {
         }
     }
 
+    private CombatEngineLayers getActiveLayer() {
+        if (fer_ModPlugin.RENDER_OVER_WEAPONS) return CombatEngineLayers.ABOVE_SHIPS_AND_MISSILES_LAYER;
+        return CombatEngineLayers.PHASED_SHIPS_LAYER;
+    }
+
     public static class FlareData {
         public final ShipEngineControllerAPI.ShipEngineAPI engine;
-        public final fer_EngineFlareAPI flare;
+        public final fer_BaseFlare flare;
         public final CombatEntityAPI entity;
+        public float angVel;
 
-        public FlareData(ShipEngineControllerAPI.ShipEngineAPI engine, fer_EngineFlareAPI flare, CombatEntityAPI entity) {
+        public FlareData(ShipEngineControllerAPI.ShipEngineAPI engine, fer_BaseFlare flare, CombatEntityAPI entity, float angVel) {
             this.engine = engine;
             this.flare = flare;
             this.entity = entity;
+            this.angVel = angVel;
         }
     }
 

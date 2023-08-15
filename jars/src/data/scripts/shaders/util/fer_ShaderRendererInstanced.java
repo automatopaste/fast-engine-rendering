@@ -2,7 +2,7 @@ package data.scripts.shaders.util;
 
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.ViewportAPI;
-import data.scripts.shaders.fer_EngineFlareShader;
+import data.scripts.shaders.fer_EnginePlugin;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix4f;
@@ -103,7 +103,7 @@ public class fer_ShaderRendererInstanced {
         }
     }
 
-    public void renderInstanced(ViewportAPI viewport, List<fer_EngineFlareShader.FlareData> flares, Matrix4f projection, boolean isGlow) {
+    public void renderInstanced(ViewportAPI viewport, List<fer_EnginePlugin.FlareData> flares, Matrix4f projection, boolean isGlow) {
         glBindVertexArray(vao);
 
         program.bind();
@@ -124,9 +124,9 @@ public class fer_ShaderRendererInstanced {
         modelViewBuffer.clear();
         colorBuffer.clear();
         boostBuffer.clear();
-        for (fer_EngineFlareShader.FlareData flareData : flares) {
-            Matrix4f modelView = isGlow ? flareData.flare.getModelViewGlow(viewport) : flareData.flare.getModelView(viewport);
-            modelView.store(modelViewBuffer);
+        for (fer_EnginePlugin.FlareData flareData : flares) {
+//            Matrix4f modelView = isGlow ? flareData.flare.getModelViewGlow(viewport) : flareData.flare.getModelView(viewport);
+//            modelView.store(modelViewBuffer);
 
             Color c = flareData.flare.getColor();
             float alpha = (flareData.flare.getDisabled() || flareData.flare.getLevelWidth() <= 0.25f || flareData.flare.getLevelLength() <= 0.25f) ? 0f : c.getAlpha() / 255f;
