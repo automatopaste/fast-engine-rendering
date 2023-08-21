@@ -19,6 +19,7 @@ import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.opengl.GL31.glDrawArraysInstanced;
 import static org.lwjgl.opengl.GL33.glVertexAttribDivisor;
 
+// unused
 public class fer_ShaderRendererInstanced {
     private final int vao;
     private final fer_ShaderProgram program;

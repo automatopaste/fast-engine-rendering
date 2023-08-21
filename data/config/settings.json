@@ -1,6 +1,6 @@
 {
 	"plugins":{
-		"fer_CombatEffectsPlugin":"data.scripts.plugins.fer_CombatEffectsPlugin",
+		#"fer_CombatEffectsPlugin":"data.scripts.plugins.fer_CombatEffectsPlugin",
 	},
 
 	#override
@@ -12,4 +12,10 @@
 	"fer_UseSecondGlowShader": true,
 
 	"fer_ForceOverrideAllStyles": false,
+
+	"graphics":{
+		"fer":{
+			"engine_texture_test":"graphics/FER/engine_texture_test2.png",
+		},
+	},
 }

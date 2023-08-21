@@ -18,6 +18,8 @@ import java.util.EnumSet;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
+import static org.lwjgl.opengl.GL13.glActiveTexture;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
 import static org.lwjgl.opengl.GL20.*;
@@ -25,6 +27,8 @@ import static org.lwjgl.opengl.GL31.glDrawElementsInstanced;
 import static org.lwjgl.opengl.GL33.glVertexAttribDivisor;
 
 public class fer_FlareRenderer extends BaseRenderPlugin {
+
+    private final int textureID;
 
     private List<fer_EnginePlugin.FlareData> drawTargets;
     private FloatBuffer projectionBuffer;
@@ -39,6 +43,12 @@ public class fer_FlareRenderer extends BaseRenderPlugin {
 
     public fer_FlareRenderer() {
         drawTargets = new ArrayList<>();
+        textureID = Global.getSettings().getSprite("fer", "engine_texture_test").getTextureId();
+    }
+
+    public fer_FlareRenderer(int textureID) {
+        drawTargets = new ArrayList<>();
+        this.textureID = textureID;
     }
 
     @Override
@@ -140,7 +150,12 @@ public class fer_FlareRenderer extends BaseRenderPlugin {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, textureID);
+
         glDrawElementsInstanced(GL_TRIANGLES, INDICES_BUFFER, numElements);
+
+        glBindTexture(GL_TEXTURE_2D, 0);
 
         modelViewBuffer.clear();
         colourBuffer.clear();

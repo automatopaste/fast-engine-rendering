@@ -1,13 +1,18 @@
 package data.scripts.shaders;
 
+import cmu.CMUtils;
+import cmu.plugins.renderers.ImplosionParticleRenderer;
+import cmu.shaders.particles.BaseParticle;
 import com.fs.starfarer.api.Global;
 import com.fs.starfarer.api.combat.*;
 import com.fs.starfarer.api.input.InputEventAPI;
+import com.fs.starfarer.api.util.IntervalUtil;
 import com.fs.starfarer.loading.specs.EngineSlot;
 import data.scripts.fer_ModPlugin;
 import data.scripts.shaders.util.fer_FlareRenderer;
 import data.scripts.shaders.util.fer_GlowRenderer;
 import org.lazywizard.lazylib.MathUtils;
+import org.lazywizard.lazylib.VectorUtils;
 import org.lwjgl.util.vector.Vector2f;
 
 import java.awt.*;
@@ -35,9 +40,6 @@ public class fer_EnginePlugin extends BaseEveryFrameCombatPlugin {
             glowRenderer.setLayer(getActiveLayer());
             Global.getCombatEngine().addLayeredRenderingPlugin(glowRenderer);
         }
-
-
-
     }
 
     public static void addFlare(ShipEngineControllerAPI.ShipEngineAPI engine, fer_BaseFlare flare, CombatEntityAPI entity) {

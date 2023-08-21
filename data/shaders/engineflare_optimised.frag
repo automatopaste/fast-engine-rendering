@@ -7,6 +7,8 @@ in float vBoost;
 out vec4 fColor;
 
 uniform float iTime;
+uniform sampler2D image0;
+
 //author tomatopaste, Jon Micheelsen
 //messing with this can break stuff so make a backup first :slight_smile:
 void main() {
@@ -48,9 +50,19 @@ void main() {
     float v = max(0.1 - (abs(y - 0.5) * x), 0.0) * 5.0 * fade;
     t += (v - t) * 0.8;
 
+    vec2 uv0 = vec2(vCoord.x - fract(a), clamp(abs(vCoord.y - 0.5) + 0.5, 0.53, 0.93));
+    vec2 uv1 = vec2(vCoord.x - fract(a), clamp(abs(vCoord.y - 0.5), 0.05, 0.45));
+
+    vec4 additive = texture(image0, uv0);
+    vec4 multiplicative = texture(image0, uv1);
+
     fColor = modColor * t * (vBoost * 1.1);
+
     //fColor = vec4(fColor.r + 0.5, fColor.g + 0.5, fColor.b + 0.5, fColor.a);
     fColor.a *= m;
     fColor *= fade;
     fColor *= 12.0;
+
+    fColor *= multiplicative;
+    //fColor += additive;
 }

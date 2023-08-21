@@ -2,7 +2,7 @@
 	"id":"fast_engine_rendering",
 	"name":"Fast Engine Rendering",
 	"author":"tomatopaste",
-	"version":"1.1.2",
+	"version":"1.1.4",
 	"description":"Uses modern OpenGL rendering techniques to efficiently render custom engine plumes.\n\nREQUIRES GPU SUPPORTING OPENGL 3.3",
 
 	"gameVersion":"0.96a-RC7",
